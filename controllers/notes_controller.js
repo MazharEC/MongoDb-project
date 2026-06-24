@@ -58,4 +58,38 @@ async function readSingleNote(req, res){
     }
 }
 
-module.exports = {createNote, readNotes, readSingleNote}
+const updateNote = async (req, res) => {
+    try {
+        const { title, description } = req.body; // req.body is undefined without express.json()
+        const note = await Note.findByIdAndUpdate(
+            req.params.id,
+            { title, description },
+            { new: true }
+        );
+        res.status(200).json({ success: true, message: "Note updated", note });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Sorry", error: error.message }); // pass error.message!
+    }
+}
+
+async function deleteNote(req, res){
+    const {id} = req.params
+    try{
+        const note = await Note.findByIdAndDelete(id)
+        res.json({
+            success: true,
+            message: 'Successfully deleted note',
+            note
+        })
+
+    }catch(error){
+        res.json({
+            success: false,
+            message: 'Sorry',
+            error
+        })
+    }
+}
+
+
+module.exports = {createNote, readNotes, readSingleNote, updateNote, deleteNote}
